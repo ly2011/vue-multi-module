@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h3>Home 页面</h3>
+    <h3 class="title">Home 页面</h3>
   </div>
 </template>
 
@@ -10,5 +10,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less" scoped>
+.title {
+  font-size: 32px;
+  color: red;
+}
 </style>

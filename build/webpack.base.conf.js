@@ -44,7 +44,7 @@ let webpackConfig = {
     }
   },
   module: {
-    // noParse: /node_modules\/(element-ui\.js)/,
+    noParse: /node_modules\/(element-ui\.js)/,
     rules: [
       ...(config.dev.useEslint ? [createLintingRule()] : []),
       {
@@ -56,7 +56,7 @@ let webpackConfig = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [
-          resolve('src'),
+          resolve('src')
           // resolve('node_modules/webpack-dev-server/client')
         ],
         query: { compact: false }
