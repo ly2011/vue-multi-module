@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=9,chrome=1">
+  <meta name=”renderer” content=”webkit”>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes">
+  <title>Login</title>
+  <!--[if lte IE 9]><script src="/static/js/history.min.js"></script><![endif]-->
+</head>
+
+<body>
+  <div id="app"></div>
+  <div class="login-shade" id="ieShade" style="display: none;"></div>
+  <div class="login-shade-content" id="ieTips" style="display: none;">
+    <i class="fa fa-remove" aria-hidden="true" onclick="closePop()">关闭</i>
+    <i class="fa fa-quote-left" aria-hidden="true"></i>
+    <div class="login-border">暂不支持当前浏览器,使用以下浏览器体验更佳</div>
+    <ul class="browser fix">
+      <li>
+        <img src="/static/images/Google.png" alt="">
+        <a class="browser-name" href="http://rj.baidu.com/soft/detail/14744.html?ald" target="_blank">Chrome </a>
+      </li>
+
+      <li>
+        <img src="/static/images/Firefox.png" alt="">
+        <a class="browser-name" href="http://rj.baidu.com/soft/detail/11843.html?ald" target="_blank">Firefox</a>
+      </li>
+      <li>
+        <img src="/static/images/Mac.png" alt="">
+        <a class="browser-name" href="http://rj.baidu.com/soft/detail/12966.html?ald" target="_blank">Safari</a>
+      </li>
+    </ul>
+    <i class="fa fa-quote-right" aria-hidden="true"></i>
+  </div>
+  <!-- built files will be auto injected -->
+</body>
+<script>
+  // ie8 及以下版本浏览器弹框信息
+  var isIE = function (ver) {
+    var b = document.createElement('b')
+    b.innerHTML = '<!--[if IE ' + ver + ']><i></i><![endif]-->'
+    return b.getElementsByTagName('i').length === 1
+  }
+  if (isIE(8) || isIE(7) || isIE(6)) {
+    document.getElementById('ieShade').style.display = 'block';
+    document.getElementById('ieTips').style.display = 'block';
+    document.getElementById('app').style.display = 'none';
+  }
+
+  function closePop() {
+    document.getElementById('ieShade').style.display = 'none';
+    document.getElementById('ieTips').style.display = 'none';
+  }
+
+</script>
+
+</html>
