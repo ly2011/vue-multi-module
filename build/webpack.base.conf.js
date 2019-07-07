@@ -2,8 +2,9 @@
 const chalk = require('chalk')
 const { resolve, assetsPath } = require('./utils')
 const config = require('../config')
-const vueLoaderConfig = require('./vue-loader.conf')
+// const vueLoaderConfig = require('./vue-loader.conf')
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 const buildEntries = require('./build-entries')
 
@@ -49,8 +50,8 @@ let webpackConfig = {
       ...(config.dev.useEslint ? [createLintingRule()] : []),
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: vueLoaderConfig
+        loader: 'vue-loader'
+        // options: vueLoaderConfig
       },
       {
         test: /\.js$/,
@@ -100,6 +101,7 @@ let webpackConfig = {
     child_process: 'empty'
   },
   plugins: [
+    new VueLoaderPlugin(),
     new ProgressBarPlugin({
       format:
         '  build [:bar] ' + chalk.green.bold(':percent') + ' (:elapsed seconds)'

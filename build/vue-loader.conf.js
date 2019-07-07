@@ -1,10 +1,11 @@
-'use strict';
-const utils = require('./utils');
-const config = require('../config');
-const isProduction = process.env.NODE_ENV === 'production';
+// [已废弃], vue-loader 升级到15.7.0之后，不在需要这些配置信息了
+'use strict'
+const utils = require('./utils')
+const config = require('../config')
+const isProduction = process.env.NODE_ENV === 'production'
 const sourceMapEnabled = isProduction
   ? config.build.productionSourceMap
-  : config.dev.cssSourceMap;
+  : config.dev.cssSourceMap
 
 module.exports = {
   loaders: Object.assign(
@@ -21,4 +22,4 @@ module.exports = {
     img: 'src',
     image: 'xlink:href'
   }
-};
+}
