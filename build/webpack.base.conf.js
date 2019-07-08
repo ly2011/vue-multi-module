@@ -2,7 +2,6 @@
 const chalk = require('chalk')
 const { resolve, assetsPath } = require('./utils')
 const config = require('../config')
-// const vueLoaderConfig = require('./vue-loader.conf')
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
@@ -51,15 +50,11 @@ let webpackConfig = {
       {
         test: /\.vue$/,
         loader: 'vue-loader'
-        // options: vueLoaderConfig
       },
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: [
-          resolve('src')
-          // resolve('node_modules/webpack-dev-server/client')
-        ],
+        include: [resolve('src')],
         query: { compact: false }
       },
       {

@@ -38,6 +38,10 @@ const wpConfigConstructor = options => {
     },
     output: {
       path: path.resolve(config.build.assetsRoot, `${options.target}-dist`),
+      publicPath:
+        (process.env.NODE_ENV === 'production'
+          ? config.build.assetsPublicPath
+          : config.dev.assetsPublicPath) + `${options.target}`,
       filename: utils.assetsPath('js/[name].[chunkhash].js'),
       chunkFilename: utils.assetsPath('js/[name].[chunkhash].js')
     },
@@ -85,13 +89,14 @@ const wpConfigConstructor = options => {
         filename: 'index.html',
         template: `src/modules/${options.target}/index.html`,
         inject: true,
-        minify: {
-          removeComments: true,
-          collapseWhitespace: true,
-          removeAttributeQuotes: true
-          // more options:
-          // https://github.com/kangax/html-minifier#options-quick-reference
-        },
+        minify: false,
+        // minify: {
+        //   removeComments: true,
+        //   collapseWhitespace: true,
+        //   removeAttributeQuotes: true
+        //   // more options:
+        //   // https://github.com/kangax/html-minifier#options-quick-reference
+        // },
         chunks: ['vendor', 'manifest', options.target],
         // necessary to consistently work with multiple chunks via CommonsChunkPlugin
         chunksSortMode: 'dependency'

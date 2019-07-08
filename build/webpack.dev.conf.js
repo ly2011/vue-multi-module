@@ -6,65 +6,11 @@ const merge = require('webpack-merge')
 const path = require('path')
 const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-// const HtmlWebpackPlugin = require('html-webpack-plugin');
-// const HtmlWebpackPlugin = require('html-webpack-plugin-for-multihtml')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
-// const glob = require('glob')
 
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
-
-// // 多文件扫描
-// let pages = (globalPath => {
-//   let htmlFiles = {},
-//     pageName
-
-//   glob.sync(globalPath).forEach(pagePath => {
-//     let basename = path.dirname(pagePath).split('/')
-//     basename = basename[basename.length - 1]
-//     pageName = basename
-//     if (utils.deployModule.includes(pageName)) {
-//       htmlFiles[pageName] = {}
-//       htmlFiles[pageName]['chunk'] = basename
-//       htmlFiles[pageName]['path'] = pagePath
-//     }
-//   })
-//   return htmlFiles
-// })(utils.resolve('src') + '/modules/*/index.html')
-
-// // devServer重定向数组
-// let rewrites = (pages => {
-//   let rewritesArr = []
-//   for (let entryName in pages) {
-//     rewritesArr.push({
-//       from: new RegExp(`(/#)?/${entryName}`),
-//       to: path.posix.join(config.dev.assetsPublicPath, `${entryName}.html`)
-//     })
-//   }
-//   rewritesArr.push({
-//     from: /.*/,
-//     to: path.posix.join(config.dev.assetsPublicPath, 'index.html')
-//   })
-//   return rewritesArr
-// })(pages)
-
-// for (let entryName in pages) {
-//   let conf = {
-//     // 生成出来的html文件名
-//     filename: entryName + '.html',
-//     // 每个html的模版，这里多个页面使用同一个模版
-//     template: pages[entryName]['path'],
-//     // 自动将引用插入html
-//     inject: true,
-//     // favicon: path.resolve('favicon.ico'),
-//     // 每个html引用的js模块，也可以在这里加上vendor等公用模块
-//     chunks: ['vendor', 'manifest', pages[entryName]['chunk']],
-//     multihtmlCache: true // 缓存多页面打包的内容，提高打包速度
-//   }
-//   /* 入口文件对应html文件（配置多个，一个页面对应一个入口，通过chunks对应） */
-//   devWebpackConfig.plugins.push(new HtmlWebpackPlugin(conf))
-// }
 
 const pages = utils.getEntry(utils.resolve('src') + '/modules/*/index.html')
 const rewrites = utils.rewrites(pages)
