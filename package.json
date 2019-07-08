@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "cross-env DEPLOY_ENV=dev MODULE_ENV=salary,login,index node --max_old_space_size=4096 node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --progress --host 0.0.0.0 --config build/webpack.dev.conf.js",
     "start": "npm run dev",
-    "build": "rimraf dist && webpack -p --config build/webpack.prod.conf.js"
+    "build": "rimraf dist && webpack -p --config build/webpack.prod.conf.js",
+    "parallel-build": "node build/parallel-build.js"
   },
   "dependencies": {
     "vue": "^2.6.10",
