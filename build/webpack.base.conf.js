@@ -7,6 +7,9 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 const buildEntries = require('./build-entries')
 
+// 使用 WEBPACK_SERVE 环境变量检测当前是否是在 webpack-server 启动的开发环境中
+const dev = Boolean(process.env.WEBPACK_SERVE)
+
 const createLintingRule = () => ({
   test: /\.(js|vue)$/,
   loader: 'eslint-loader',
@@ -21,13 +24,11 @@ const createLintingRule = () => ({
 
 let webpackConfig = {
   entry: buildEntries,
+  mode: dev ? 'development' : 'production',
   output: {
     path: config.build.assetsRoot, // 编译后文件的存放目录
     filename: '[name].js',
-    publicPath:
-      process.env.NODE_ENV === 'production'
-        ? config.build.assetsPublicPath
-        : config.dev.assetsPublicPath
+    publicPath: process.env.NODE_ENV === 'production' ? config.build.assetsPublicPath : config.dev.assetsPublicPath
   },
   resolve: {
     extensions: ['.js', '.vue', '.json'],
@@ -49,37 +50,55 @@ let webpackConfig = {
       ...(config.dev.useEslint ? [createLintingRule()] : []),
       {
         test: /\.vue$/,
-        loader: 'vue-loader'
+        use: 'vue-loader'
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        include: [resolve('src')],
-        query: { compact: false }
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              compact: false
+            }
+          }
+        ],
+        include: [resolve('src')]
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-        loader: 'url-loader',
-        options: {
-          limit: 10000,
-          name: assetsPath('img/[name].[hash:7].[ext]')
-        }
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 10000,
+              name: assetsPath('img/[name].[hash:7].[ext]')
+            }
+          }
+        ]
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-        loader: 'url-loader',
-        options: {
-          limit: 10000,
-          name: assetsPath('media/[name].[hash:7].[ext]')
-        }
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 10000,
+              name: assetsPath('media/[name].[hash:7].[ext]')
+            }
+          }
+        ]
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-        loader: 'url-loader',
-        options: {
-          limit: 10000,
-          name: assetsPath('fonts/[name].[hash:7].[ext]')
-        }
+        loader: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 10000,
+              name: assetsPath('fonts/[name].[hash:7].[ext]')
+            }
+          }
+        ]
       }
     ]
   },
@@ -98,8 +117,7 @@ let webpackConfig = {
   plugins: [
     new VueLoaderPlugin(),
     new ProgressBarPlugin({
-      format:
-        '  build [:bar] ' + chalk.green.bold(':percent') + ' (:elapsed seconds)'
+      format: '  build [:bar] ' + chalk.green.bold(':percent') + ' (:elapsed seconds)'
     })
   ]
 }

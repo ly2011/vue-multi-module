@@ -4,15 +4,15 @@ const path = require('path')
 const _ = require('lodash')
 const glob = require('glob')
 const config = require('../config')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin-for-multihtml')
+// const ExtractTextPlugin = require('extract-text-webpack-plugin')
+// const HtmlWebpackPlugin = require('html-webpack-plugin-for-multihtml')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const packageConfig = require('../package.json')
 
 exports.assetsPath = function(_path) {
   const assetsSubDirectory =
-    process.env.NODE_ENV === 'production'
-      ? config.build.assetsSubDirectory
-      : config.dev.assetsSubDirectory
+    process.env.NODE_ENV === 'production' ? config.build.assetsSubDirectory : config.dev.assetsSubDirectory
 
   return path.posix.join(assetsSubDirectory, _path)
 }
@@ -68,26 +68,31 @@ exports.cssLoaders = function(options) {
 
   // generate loader string to be used with extract text plugin
   function generateLoaders(loader, loaderOptions) {
-    const loaders = options.usePostCSS
-      ? [cssLoader, postcssLoader]
-      : [cssLoader]
+    const loaders = options.usePostCSS ? [cssLoader, postcssLoader] : [cssLoader]
 
     if (loader) {
       loaders.push({
         loader: loader + '-loader',
-        options: Object.assign({}, loaderOptions, {
-          sourceMap: options.sourceMap
-        })
+        options: Object.assign(
+          {
+            hmr: process.env.NODE_ENV === 'development' && options.extract
+          },
+          loaderOptions,
+          {
+            sourceMap: options.sourceMap
+          }
+        )
       })
     }
 
     // Extract CSS when that option is specified
     // (which is the case during production build)
     if (options.extract) {
-      return ExtractTextPlugin.extract({
-        use: loaders,
-        fallback: 'vue-style-loader'
-      })
+      // return ExtractTextPlugin.extract({
+      //   use: loaders,
+      //   fallback: 'vue-style-loader'
+      // })
+      return [MiniCssExtractPlugin.loader].concat(loaders)
     } else {
       return ['vue-style-loader'].concat(loaders)
     }
@@ -187,12 +192,12 @@ exports.getHtmlTemplates = (pages, isPro) => {
       inject: true,
       minify: isPro
         ? {
-          removeComments: true,
-          collapseWhitespace: true,
-          removeAttributeQuotes: true
+            removeComments: true,
+            collapseWhitespace: true,
+            removeAttributeQuotes: true
             // more options:
             // https://github.com/kangax/html-minifier#options-quick-reference
-        }
+          }
         : {},
       // favicon: path.resolve('favicon.ico'),
       // 每个html引用的js模块，也可以在这里加上vendor等公用模块

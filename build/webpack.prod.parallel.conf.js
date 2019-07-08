@@ -7,7 +7,8 @@ const merge = require('webpack-merge')
 const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+// const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
 const AutoDllPlugin = require('autodll-webpack-plugin')
@@ -31,26 +32,60 @@ const wpConfigConstructor = options => {
     },
     devtool: config.build.productionSourceMap ? config.build.devtool : false,
     entry: {
-      [options.target]: [
-        'babel-polyfill',
-        `./src/modules/${options.target}/main.js`
-      ]
+      [options.target]: ['babel-polyfill', `./src/modules/${options.target}/main.js`]
     },
     output: {
       path: path.resolve(config.build.assetsRoot, `${options.target}-dist`),
       publicPath:
-        (process.env.NODE_ENV === 'production'
-          ? config.build.assetsPublicPath
-          : config.dev.assetsPublicPath) + `${options.target}`,
+        (process.env.NODE_ENV === 'production' ? config.build.assetsPublicPath : config.dev.assetsPublicPath) +
+        `${options.target}`,
       filename: utils.assetsPath('js/[name].[chunkhash].js'),
       chunkFilename: utils.assetsPath('js/[name].[chunkhash].js')
+    },
+    optimization: {
+      minimizer: [
+        new ParallelUglifyPlugin({
+          cacheDir: '.cache/',
+          uglifyJS: {
+            output: {
+              comments: false
+            },
+            compress: {
+              drop_console: true,
+              drop_debugger: true
+            }
+          },
+          sourceMap: config.build.productionSourceMap
+        }),
+        new OptimizeCSSPlugin({
+          cssProcessorOptions: config.build.productionSourceMap
+            ? { safe: true, map: { inline: false } }
+            : { safe: true }
+        })
+      ],
+      splitChunks: {
+        cacheGroups: {
+          js: {
+            test: /\.js$/,
+            name: 'vendor',
+            chunks: 'all',
+            minChunks: 7
+          },
+          css: {
+            test: /\.(css|less|sass|scss)$/,
+            name: 'commons',
+            chunks: 'all',
+            minChunks: 2
+          }
+        }
+      }
     },
     plugins: [
       // http://vuejs.github.io/vue-loader/en/workflow/production.html
       new webpack.DefinePlugin({
         'process.env': config.build.env
       }),
-      new ParallelUglifyPlugin({
+      /*       new ParallelUglifyPlugin({
         cacheDir: '.cache/',
         uglifyJS: {
           output: {
@@ -62,18 +97,24 @@ const wpConfigConstructor = options => {
           }
         },
         sourceMap: config.build.productionSourceMap
-      }),
+      }), */
       // extract css into its own file
-      new ExtractTextPlugin({
-        filename: utils.assetsPath('css/[name].[contenthash].css')
-      }),
+      // new ExtractTextPlugin({
+      //   filename: utils.assetsPath('css/[name].[contenthash].css')
+      // }),
+      ...[
+        new MiniCssExtractPlugin({
+          // Options similar to the same options in webpackOptions.output
+          // both options are optional
+          filename: '[name].css',
+          chunkFilename: '[id].css'
+        })
+      ],
       // Compress extracted CSS. We are using this plugin so that possible
       // duplicated CSS from different components can be deduped.
-      new OptimizeCSSPlugin({
-        cssProcessorOptions: config.build.productionSourceMap
-          ? { safe: true, map: { inline: false } }
-          : { safe: true }
-      }),
+      // new OptimizeCSSPlugin({
+      //   cssProcessorOptions: config.build.productionSourceMap ? { safe: true, map: { inline: false } } : { safe: true }
+      // }),
 
       new AutoDllPlugin({
         inject: true, // will inject the DLL bundle to index.html
@@ -81,7 +122,7 @@ const wpConfigConstructor = options => {
         filename: '[name]_[hash].js',
         path: './dll',
         entry: {
-          vendor: ['vue', 'vue-router', 'vuex']
+          vendor: ['vue', 'vue-router']
         }
       }),
 
@@ -107,7 +148,7 @@ const wpConfigConstructor = options => {
       new webpack.optimize.ModuleConcatenationPlugin(),
       new webpack.optimize.AggressiveMergingPlugin(),
 
-      // split vendor js into its own file
+      /*       // split vendor js into its own file
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',
         minChunks: function(module, count) {
@@ -115,8 +156,7 @@ const wpConfigConstructor = options => {
           return (
             module.resource &&
             /\.js$/.test(module.resource) &&
-            module.resource.indexOf(path.join(__dirname, '../node_modules')) ===
-              0
+            module.resource.indexOf(path.join(__dirname, '../node_modules')) === 0
           )
         }
       }),
@@ -126,13 +166,8 @@ const wpConfigConstructor = options => {
         name: 'manifest',
         chunks: ['vendor'],
         minChunks: Infinity
-      }),
-      // new webpack.optimize.CommonsChunkPlugin({
-      //   name: 'app',
-      //   async: 'vendor-async',
-      //   children: true,
-      //   minChunks: 7
-      // }),
+      }), */
+
       // copy custom static assets
       new CopyWebpackPlugin([
         {
@@ -151,9 +186,7 @@ const wpConfigConstructor = options => {
       new CompressionWebpackPlugin({
         asset: '[path].gz[query]',
         algorithm: 'gzip',
-        test: new RegExp(
-          '\\.(' + config.build.productionGzipExtensions.join('|') + ')$'
-        ),
+        test: new RegExp('\\.(' + config.build.productionGzipExtensions.join('|') + ')$'),
         threshold: 10240,
         minRatio: 0.8
       })
@@ -161,8 +194,7 @@ const wpConfigConstructor = options => {
   }
 
   if (config.build.bundleAnalyzerReport) {
-    const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-      .BundleAnalyzerPlugin
+    const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
     webpackConfig.plugins.push(
       new BundleAnalyzerPlugin({
         analyzerPort: 3009

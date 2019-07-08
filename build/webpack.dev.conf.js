@@ -41,9 +41,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     port: PORT || config.dev.port,
     disableHostCheck: true,
     open: config.dev.autoOpenBrowser,
-    overlay: config.dev.errorOverlay
-      ? { warnings: false, errors: true }
-      : false,
+    overlay: config.dev.errorOverlay ? { warnings: false, errors: true } : false,
     publicPath: config.dev.assetsPublicPath,
     // proxy: config.dev.proxyTable,
     quiet: true, // necessary for FriendlyErrorsPlugin
@@ -86,15 +84,9 @@ module.exports = new Promise((resolve, reject) => {
       devWebpackConfig.plugins.push(
         new FriendlyErrorsPlugin({
           compilationSuccessInfo: {
-            messages: [
-              `Your application is running here: http://${
-                devWebpackConfig.devServer.host
-              }:${port}`
-            ]
+            messages: [`Your application is running here: http://${devWebpackConfig.devServer.host}:${port}`]
           },
-          onErrors: config.dev.notifyOnErrors
-            ? utils.createNotifierCallback()
-            : undefined
+          onErrors: config.dev.notifyOnErrors ? utils.createNotifierCallback() : undefined
         })
       )
 

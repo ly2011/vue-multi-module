@@ -20,7 +20,7 @@ module.exports = {
   // https://github.com/standard/standard/blob/master/docs/RULES-en.md
   extends: ['standard', 'plugin:flowtype/recommended'],
   // required to lint *.vue files
-  plugins: ['html', 'flowtype'],
+  plugins: ['html', 'flowtype', 'vue'],
   // add your custom rules here
   rules: {
     semi: 0,
