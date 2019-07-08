@@ -90,13 +90,13 @@ const initWebapck = () => {
   )
 }
 
-const init = async () => {
-  await deleteDists()
+const init = async deleteDirs => {
+  await deleteDists(deleteDirs)
   initWebapck()
 }
 
 // 开始执行
-init()
+init(deleteDirs)
 
 /* deleteDirs.forEach((path, index) => {
   rm(path, err => {
