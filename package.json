@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cross-env DEPLOY_ENV=dev MODULE_ENV=salary,login,index node --max_old_space_size=4096 node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --progress --host 0.0.0.0 --config build/webpack.dev.conf.js",
     "start": "npm run dev",
-    "test": "node index.js"
+    "build": "rimraf dist && webpack -p --config build/webpack.prod.conf.js"
   },
   "dependencies": {
     "vue": "^2.6.10",
@@ -78,7 +78,17 @@
     "webpack-dev-middleware": "^1.10.0",
     "webpack-dev-server": "^2.9.1",
     "webpack-hot-middleware": "^2.18.0",
+    "webpack-parallel-uglify-plugin": "^1.0.2",
     "webpack-merge": "^4.1.0"
   },
+  "engines": {
+    "node": ">= 6.0.0",
+    "npm": ">= 3.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ],
   "license": "MIT"
 }
