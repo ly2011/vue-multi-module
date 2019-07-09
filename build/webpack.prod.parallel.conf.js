@@ -21,6 +21,11 @@ const variants = {
 /* webpack-merge 不满足需求 */
 baseWebpackConfig.entry = {}
 
+const commonOptions = {
+  chunks: 'all',
+  reuseExistingChunk: true
+}
+
 const wpConfigConstructor = options => {
   const webpackConfig = merge(baseWebpackConfig, {
     module: {
@@ -32,17 +37,27 @@ const wpConfigConstructor = options => {
     },
     devtool: config.build.productionSourceMap ? config.build.devtool : false,
     entry: {
-      [options.target]: ['babel-polyfill', `./src/modules/${options.target}/main.js`]
+      [options.target]: [
+        'babel-polyfill',
+        `./src/modules/${options.target}/main.js`
+      ]
     },
     output: {
       path: path.resolve(config.build.assetsRoot, `${options.target}-dist`),
       publicPath:
-        (process.env.NODE_ENV === 'production' ? config.build.assetsPublicPath : config.dev.assetsPublicPath) +
-        `${options.target}`,
+        (process.env.NODE_ENV === 'production'
+          ? config.build.assetsPublicPath
+          : config.dev.assetsPublicPath) + `${options.target}`,
       filename: utils.assetsPath('js/[name].[chunkhash].js'),
       chunkFilename: utils.assetsPath('js/[name].[chunkhash].js')
     },
+    // https://www.cnblogs.com/lalalagq/p/9809174.html
     optimization: {
+      namedChunks: true, // NamedChunksPlugin -> namedChunks: true
+      moduleIds: 'hashed', // HashedModuleIdsPlugin -> moduleIds: hashed
+      runtimeChunk: {
+        name: 'manifest' // new webpack.optimize.CommonsChunkPlugin({name: 'manifest'}) -> runtimeChunk: {name: 'manifest'}
+      },
       minimizer: [
         new ParallelUglifyPlugin({
           cacheDir: '.cache/',
@@ -64,18 +79,21 @@ const wpConfigConstructor = options => {
         })
       ],
       splitChunks: {
+        maxInitialRequests: 5,
         cacheGroups: {
-          js: {
-            test: /\.js$/,
+          vendor: {
+            test: /node_modules\/(.*)\.js/, // 表示默认拆分node_modules中的模块
+            chunks: 'initial',
             name: 'vendor',
-            chunks: 'all',
-            minChunks: 7
+            priority: 10,
+            ...commonOptions
           },
-          css: {
+          styles: {
             test: /\.(css|less|sass|scss)$/,
-            name: 'commons',
+            name: 'styles',
             chunks: 'all',
-            minChunks: 2
+            minChunks: 2,
+            ...commonOptions
           }
         }
       }
@@ -186,7 +204,9 @@ const wpConfigConstructor = options => {
       new CompressionWebpackPlugin({
         asset: '[path].gz[query]',
         algorithm: 'gzip',
-        test: new RegExp('\\.(' + config.build.productionGzipExtensions.join('|') + ')$'),
+        test: new RegExp(
+          '\\.(' + config.build.productionGzipExtensions.join('|') + ')$'
+        ),
         threshold: 10240,
         minRatio: 0.8
       })
@@ -194,7 +214,8 @@ const wpConfigConstructor = options => {
   }
 
   if (config.build.bundleAnalyzerReport) {
-    const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+    const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+      .BundleAnalyzerPlugin
     webpackConfig.plugins.push(
       new BundleAnalyzerPlugin({
         analyzerPort: 3009
