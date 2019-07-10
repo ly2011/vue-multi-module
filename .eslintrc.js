@@ -2,8 +2,8 @@
 
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
   parserOptions: {
+    "parser": "babel-eslint",
     ecmaVersion: 7,
     sourceType: 'module',
     ecmaFeatures: {
@@ -14,23 +14,18 @@ module.exports = {
     axios: false
   },
   env: {
-    browser: true
+    browser: true,
+    node: true,
+    es6: true
   },
   /* global axios:false, var2:false */
   // https://github.com/standard/standard/blob/master/docs/RULES-en.md
-  extends: ['standard', 'plugin:flowtype/recommended'],
+  extends: ['plugin:vue/essential', 'eslint:recommended'],
   // required to lint *.vue files
-  plugins: ['html', 'flowtype', 'vue'],
+  plugins: ['vue'],
   // add your custom rules here
   rules: {
-    semi: 0,
-    'no-useless-escape': 0,
-    // allow paren-less arrow functions
-    'arrow-parens': 0,
-    // allow async-await
-    'generator-star-spacing': 0,
-    // allow debugger during development
-    'no-debugger': 0,
-    'space-before-function-paren': 0
+    'no-console': 'off',
+    'semi': [2, 'never']
   }
 }
