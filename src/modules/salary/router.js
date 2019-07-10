@@ -11,6 +11,10 @@ export default new Router({
   // fallback: false,
   routes: [
     {
+      path: '/',
+      redirect: '/salary'
+    },
+    {
       path: '/salary',
       // name: 'home',
       component: Home

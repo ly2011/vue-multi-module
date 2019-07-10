@@ -23,6 +23,7 @@ baseWebpackConfig.entry = {}
 
 const commonOptions = {
   chunks: 'all',
+  enforce: true,
   reuseExistingChunk: true
 }
 
@@ -44,10 +45,10 @@ const wpConfigConstructor = options => {
     },
     output: {
       path: path.resolve(config.build.assetsRoot, `${options.target}-dist`),
-      publicPath:
-        (process.env.NODE_ENV === 'production'
-          ? config.build.assetsPublicPath
-          : config.dev.assetsPublicPath) + `${options.target}`,
+      // publicPath:
+      //   (process.env.NODE_ENV === 'production'
+      //     ? config.build.assetsPublicPath
+      //     : config.dev.assetsPublicPath) + `${options.target}`,
       filename: utils.assetsPath('js/[name].[chunkhash].js'),
       chunkFilename: utils.assetsPath('js/[name].[chunkhash].js')
     },
@@ -81,10 +82,10 @@ const wpConfigConstructor = options => {
       splitChunks: {
         maxInitialRequests: 5,
         cacheGroups: {
-          vendor: {
-            test: /node_modules\/(.*)\.js/, // 表示默认拆分node_modules中的模块
+          vendors: {
+            test: /node_modules/, // 表示默认拆分node_modules中的模块
             chunks: 'initial',
-            name: 'vendor',
+            name: 'vendors',
             priority: 10,
             ...commonOptions
           },
@@ -124,25 +125,26 @@ const wpConfigConstructor = options => {
         new MiniCssExtractPlugin({
           // Options similar to the same options in webpackOptions.output
           // both options are optional
-          filename: '[name].css',
-          chunkFilename: '[id].css'
+          filename: utils.assetsPath('css/[name].[chunkhash].css'),
+          chunkFilename: utils.assetsPath('js/[id].[chunkhash].css')
         })
       ],
+
       // Compress extracted CSS. We are using this plugin so that possible
       // duplicated CSS from different components can be deduped.
       // new OptimizeCSSPlugin({
       //   cssProcessorOptions: config.build.productionSourceMap ? { safe: true, map: { inline: false } } : { safe: true }
       // }),
 
-      new AutoDllPlugin({
-        inject: true, // will inject the DLL bundle to index.html
-        debug: true,
-        filename: '[name]_[hash].js',
-        path: './dll',
-        entry: {
-          vendor: ['vue', 'vue-router']
-        }
-      }),
+      // new AutoDllPlugin({
+      //   inject: true, // will inject the DLL bundle to index.html
+      //   debug: true,
+      //   filename: '[name]_[hash].js',
+      //   path: './dll',
+      //   entry: {
+      //     vendor: ['vue', 'vue-router']
+      //   }
+      // }),
 
       new HtmlWebpackPlugin({
         filename: 'index.html',
@@ -156,7 +158,7 @@ const wpConfigConstructor = options => {
         //   // more options:
         //   // https://github.com/kangax/html-minifier#options-quick-reference
         // },
-        chunks: ['vendor', 'manifest', options.target],
+        chunks: ['vendors', 'manifest', options.target],
         // necessary to consistently work with multiple chunks via CommonsChunkPlugin
         chunksSortMode: 'dependency'
       }),
