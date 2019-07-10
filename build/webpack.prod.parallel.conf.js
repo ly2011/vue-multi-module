@@ -11,7 +11,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
-const AutoDllPlugin = require('autodll-webpack-plugin')
+// const AutoDllPlugin = require('autodll-webpack-plugin')
 
 const createVariants = require('parallel-webpack').createVariants
 const baseOptions = {}
@@ -23,7 +23,6 @@ baseWebpackConfig.entry = {}
 
 const commonOptions = {
   chunks: 'all',
-  enforce: true,
   reuseExistingChunk: true
 }
 
@@ -82,19 +81,30 @@ const wpConfigConstructor = options => {
       splitChunks: {
         maxInitialRequests: 5,
         cacheGroups: {
-          vendors: {
-            test: /node_modules/, // 表示默认拆分node_modules中的模块
-            chunks: 'initial',
-            name: 'vendors',
+          polyfill: {
+            test: /[\\/]node_modules[\\/](core-js|es6-promise)[\\/]/,
+            name: 'polyfill',
             priority: 10,
+            ...commonOptions
+          },
+          vendors: {
+            test: /[\\/]node_modules[\\/](vue|vue-router)[\\/]/, // 表示默认拆分node_modules中的模块
+            name: 'vendors',
+            priority: 9,
+            ...commonOptions
+          },
+          commons: {
+            minChunks: 2,
+            maxInitialRequests: 5,
+            minSize: 10000,
+            priority: 8,
             ...commonOptions
           },
           styles: {
             test: /\.(css|less|sass|scss)$/,
             name: 'styles',
             chunks: 'all',
-            minChunks: 2,
-            ...commonOptions
+            minChunks: 2
           }
         }
       }
@@ -158,7 +168,7 @@ const wpConfigConstructor = options => {
         //   // more options:
         //   // https://github.com/kangax/html-minifier#options-quick-reference
         // },
-        chunks: ['vendors', 'manifest', options.target],
+        chunks: ['polyfill', 'vendors', 'commons', 'manifest', options.target],
         // necessary to consistently work with multiple chunks via CommonsChunkPlugin
         chunksSortMode: 'dependency'
       }),
