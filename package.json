@@ -57,7 +57,7 @@
     "http-proxy-middleware": "^0.17.3",
     "less": "^3.0.0-alpha.3",
     "less-loader": "^4.0.5",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.21",
     "node-notifier": "^5.1.2",
     "opn": "^5.1.0",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
